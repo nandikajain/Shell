@@ -34,22 +34,26 @@ void viewHistory()
 	{
 		printf("%s\n","too many arguements" );
 	}
-	else if(noOfArguements==1 || atoi(args[1])>total_count)
+	else if(noOfArguements==1)
 	{
 		for(int i=0;i<total_count;i++)
 		{
-			printf("%d %s\n",i+1, history[i] );
+			printf("%d %s",i+1, history[i] );
 		}
 	}
 	else{
 		int value= atoi(args[1]);
+
 		if(value<0)
+		{	printf("%s\n", "invalid option" );}
+		else if(value>total_count)
 		{
-			printf("%s\n", "invalid option" );
+			for(int i=0;i<total_count;i++)
+			{	printf("%d %s",i+1, history[i] );}
 		}
-		for(int i=total_count-value; i<total_count;i++)
-		{
-			printf("%d %s\n",i+1, history[i] );
+		else{
+			for(int i=total_count-value; i<total_count;i++)
+			{	printf("%d %s",i+1, history[i] );}
 		}
 	}
 }
@@ -88,9 +92,7 @@ int main(){
 	{
 		printf(">");
 		getline(&line,&inputSize,stdin);
-		history[total_count]=line;
-		// printf("%s\n",line );
-		// printf("%s\n", history[total_count]);
+		history[total_count]=strdup(line);
 		total_count++;
 		char* temp=strtok(line, Delimiter);
 		noOfArguements=0;
@@ -105,12 +107,8 @@ int main(){
 		{
 			echo();
 		}
-		if(strcmp(args[0], "history")==0)
+		else if(strcmp(args[0], "history")==0)
 		{
-			for(int i=0;i<total_count;i++)
-			{
-				printf("%s\n",history[i] );
-			}
 			viewHistory();
 		}
 		else if(strcmp(args[0], "pwd")==0)
