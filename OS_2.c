@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -181,37 +182,146 @@ void echo()
 		}
 		}}
 }
+
 void viewHistory()
 {
-	if(noOfArguements>2)
+	int fd3=open("./history.txt", O_RDWR | O_CREAT | O_APPEND, S_IRWXO | S_IRWXG | S_IRWXU);
+	if(noOfArguements==1)
 	{
-		printf("%s\n","too many arguements" );
-	}
-	else if(noOfArguements==1)
-	{
-		for(int i=0;i<total_count;i++)
-		{
-			printf("%d %s",i+1, history[i] );
+		char lineTemp2[1000];
+		int idx=0;
+		int count=1;
+
+		while(1){
+			int temp;
+			idx=0;
+			while((temp=read(fd3, &lineTemp2[idx], sizeof(char)))>0){
+				if(lineTemp2[idx]=='\n')
+				{
+					break;
+				}
+				idx++;
+			}
+
+			if(temp<=0)
+			{
+				break;
+			}
+			printf("%d %s",count,lineTemp2 );
+			count++;
+			int len = strlen(lineTemp2);
+			for(int a = 0; a < len; a++)
+			{	
+				lineTemp2[a] = '\0';
+			}
 		}
+
+	}
+	else if(strcmp(args[1], "-c")==0)
+	{
+		close(fd);
+		fd = open("./history.txt", O_RDWR | O_CREAT | O_APPEND | O_TRUNC, S_IRWXO | S_IRWXG | S_IRWXU);
+
+	}
+	else if(strcmp(args[1],"-d")==0)
+	{
+		int offset= atoi(args[2]);
+
 	}
 	else{
-		int value= atoi(args[1]);
-
-		if(value<0)
-		{	printf("%s\n", "invalid option" );}
-		else if(value>total_count)
+		if(noOfArguements>2)
 		{
-			for(int i=0;i<total_count;i++)
-			{	printf("%d %s",i+1, history[i] );}
+			printf("%s\n","too many arguements" );
 		}
-		else{
-			for(int i=total_count-value; i<total_count;i++)
-			{	printf("%d %s",i+1, history[i] );}
+		else {
+			int value= atoi(args[1]);
+			int temp=0;
+
+			if(value<0)
+			{	printf("%s\n", "invalid option" );}
+			else if(value>total_count)
+			{
+				char lineTemp2[350];
+				int count=1;
+				int idx=0;
+				while(1){
+					int temp;
+					idx=0;
+					while((temp=read(fd3, &lineTemp2[idx], sizeof(char)))>0){
+						//printf("NOT HERE\n" );
+						if(lineTemp2[idx]=='\n')
+						{
+							break;
+						}
+						idx++;
+					}
+					if(temp<=0)
+					{
+						break;
+					}
+					printf("%d %s",count ,lineTemp2 );
+					count++;
+					int len = strlen(lineTemp2);
+					for(int a = 0; a < len; a++)
+					{	
+						lineTemp2[a] = '\0';
+					}
+				}
+			}
+			else{
+				char lineTemp2[350];
+				int idx=0;
+				int initial=1;
+				int count=total_count-value+1;
+				while(initial<(total_count-value+1))
+				{
+					int temp;
+					idx=0;
+					while((temp=read(fd3, &lineTemp2[idx], sizeof(char)))>0){
+						if(lineTemp2[idx]=='\n')
+						{
+							break;
+						}
+						idx++;
+					}
+					initial++;
+					int len = strlen(lineTemp2);
+					for(int a = 0; a < len; a++)
+					{	
+						lineTemp2[a] = '\0';
+					}
+				}
+
+				while(1){
+					int temp;
+					idx=0;
+					while((temp=read(fd3, &lineTemp2[idx], sizeof(char)))>0){
+						if(lineTemp2[idx]=='\n')
+						{
+							break;
+						}
+						idx++;
+					}
+					if(temp<=0)
+					{
+						break;
+					}
+					printf("%d %s",count ,lineTemp2 );
+					count++;
+					int len = strlen(lineTemp2);
+					for(int a = 0; a < len; a++)
+					{	
+						lineTemp2[a] = '\0';
+					}
+				}
+			}
 		}
+
 	}
+	close(fd3);
+
 }
 
-//error with pwd, how to fix??
 void pwd()
 {
 	if(noOfArguements==1)
@@ -243,14 +353,14 @@ void pwd()
 				printf("%s\n","too many arguements" );
 			}
 			else{
-				char tmp[1000];
-				if(getcwd(tmp, sizeof(tmp))==NULL)
+				char tmp2[1000];
+				if(getcwd(tmp2, sizeof(tmp2))==NULL)
 				{
 					printf("Error no : %d\n",errno );
 				}
 				else{
-					getcwd(tmp, sizeof(tmp));
-					printf("%s\n", tmp);		
+					getcwd(tmp2, sizeof(tmp2));
+					printf("%s\n", tmp2);		
 				}
 		}
 		}}
@@ -264,21 +374,20 @@ void callExit()
 int main(){
 
 	args = (char **)malloc(sizeof(char *) * inputSize);
-	// fd=open("history.txt", O_RDWR | O_CREAT );
-	// if(fd==-1)
-	// {
-	// 	printf("Error no %d\n",errno );
-	// 	perror("Error : ");
-	// }
+	fd = open("./history.txt", O_RDWR | O_CREAT | O_APPEND, S_IRWXO | S_IRWXG | S_IRWXU);
+	if(fd==-1)
+	{
+		printf("Error no %d\n",errno );
+		perror("Error : ");
+	}
 
 	while(1)
 	{
 		printf(">");
 		getline(&line,&inputSize,stdin);
-		// write(fd,line, strlen(line));
+		write(fd,line, strlen(line));
 		char* temp=strtok(line, Delimiter);
 		noOfArguements=0;
-		// printf("%ld\n", strlen(args[0]));
 		while(temp!=NULL)
 		{
 			args[noOfArguements]=temp;
@@ -295,6 +404,33 @@ int main(){
 		}
 		else if(strcmp(args[0], "history")==0)
 		{
+			int fd2=open("./history.txt", O_RDWR | O_CREAT | O_APPEND, S_IRWXO | S_IRWXG | S_IRWXU);
+			total_count=0;
+			char lineTemp[300];
+			int idx=0;
+			while(1){
+				int temp;
+				while((temp=read(fd2, &lineTemp[idx], sizeof(char)))>0){
+					if(lineTemp[idx]=='\n')
+					{
+						break;
+					}
+					idx++;
+					total_count++;
+				}
+
+				if(temp<=0)
+				{
+					break;
+				}
+				int len = strlen(lineTemp);
+				for(int a = 0; a < len; a++)
+				{	
+					lineTemp[a] = '\0';
+				}
+			}
+			close(fd2);
+
 			viewHistory();
 		}
 		else if(strcmp(args[0], "pwd")==0)
@@ -303,11 +439,11 @@ int main(){
 		}
 		else if(strcmp(args[0], "exit")==0)
 		{
-			// if (close(fd) < 0)  
-   // 			{ 
-   //     			perror("Error : "); 
+			if (close(fd) < 0)  
+   			{ 
+       			perror("Error : "); 
  
-   //  		}  
+    		}  
 			callExit();
 		}
 
@@ -315,3 +451,6 @@ int main(){
 	return 0;
 
 }
+
+
+
