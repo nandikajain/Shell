@@ -18,15 +18,157 @@ const char* Delimiter = " \t\r\n\a";
 char** history;
 int total_count;	
 
-//echo "Hi" in real life prints Hi n not "HI"
+
+void echo_checkbackslash(char *dest, char *argument)
+{
+	if (argument[0] == '\\')
+	{
+		if (argument[1] == 'a')
+			strcat(dest, "\a");
+		else if (argument[1] == 'b')
+			strcat(dest, "\b");
+		else if (argument[1] == '0')
+			strcat(dest, "\0");
+		else if (argument[1] == 'e')
+			strcat(dest, "\e");
+		else if (argument[1] == 'f')
+			strcat(dest, "\f");
+		else if (argument[1] == 'n')
+			strcat(dest, "\n");
+		else if (argument[1] == 'r')
+			strcat(dest, "\r");
+		else if (argument[1] == 't')
+			strcat(dest, "\t");
+		else if (argument[1] == 'v')
+			strcat(dest, "\v");
+		else if (argument[1] == '\\')
+			strcat(dest, "\\");
+		else if (argument[1] == '\"')
+			strcat(dest, "\"");		
+		else if (argument[1] == '\'')
+			strcat(dest, "\'");	
+		else if (argument[1] == '\?')
+			strcat(dest, "\?");
+		else
+		{
+			strcat(dest, argument);
+			strcat(dest, " ");
+		}
+	}
+	else
+	{
+		strcat(dest, argument);
+		strcat(dest, " ");
+	}
+}
+
+
 void echo()
 {
-	for(int i=1;i<noOfArguements;i++)
+	int st = 1;
+	int isdashN=0;
+	int isdashE=0;
+	if( strcmp(args[st],"-n")==0)
 	{
-		printf("%s ", args[i]);
+		isdashN=1;
+		st++;
+	} 
+	if( strcmp(args[st],"-e")==0)
+	{
+		isdashE=1;
+		st++;
+	} 	
+	if( strcmp(args[st],"-n")==0)
+	{
+		isdashN=1;
+		st++;
+	} 	
+	if( strcmp(args[st],"-n")==0)
+	{
+		isdashE=1;
+		st++;
+	} 
+	char dest[250];
+	strcpy(dest, "");
+	if(isdashE==0)
+	{
+		int start=1;
+		if (isdashN==1)
+		{
+			start++;
 
+		}
+		for(int i=start;i<noOfArguements;i++)
+	{
+		if(i==start && args[i][0]=='"')
+		{
+			args[i]=args[i]+1;
+			if(args[i][(strlen(args[i]))-1]=='"')
+			{
+				args[i][(strlen(args[i]))-1] = '\0';
+			}
+			strcat(dest, args[i]);
+			strcat(dest," ");	
+		}
+		else if(i==(noOfArguements-1) && args[i][(strlen(args[i]))-1]=='"')
+		{
+			args[i][(strlen(args[i]))-1] = '\0';
+			strcat(dest, args[i]);
+			strcat(dest," ");
+		}
+		else{
+			strcat(dest, args[i]);
+			strcat(dest," ");
+		}
 	}
-	printf("\n");
+	if(isdashN==1)
+	{
+		printf("%s",dest );
+	}
+	else{
+		printf("%s \n",dest );
+	}
+	}
+	if(isdashE==1)
+	{ int start=2;
+
+		if(isdashN==1)
+		{
+			start++;
+		}
+		for(int i=start;i<noOfArguements;i++)
+	{
+		if(i==start && args[i][0]=='"')
+		{
+			args[i]=args[i]+1;
+			if(args[i][(strlen(args[i]))-1]=='"')
+			{
+				args[i][(strlen(args[i]))-1] = '\0';
+			}
+			echo_checkbackslash(dest, args[i]);
+			strcat(dest, " ");	
+		}
+		else if(i==(noOfArguements-1) && args[i][(strlen(args[i]))-1]=='"')
+		{
+			args[i][(strlen(args[i]))-1] = '\0';
+			echo_checkbackslash(dest, args[i]);
+			strcat(dest, " ");	
+
+		}
+		else{
+			echo_checkbackslash(dest, args[i]);
+			strcat(dest, " ");	
+
+		}
+	}
+	if(isdashN==1)
+	{
+		printf("%s",dest );
+	}
+	else{
+		printf("%s \n",dest );
+	}
+	}
 }
 void viewHistory()
 {
