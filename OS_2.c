@@ -19,6 +19,11 @@ char** history;
 int total_count;	
 
 
+void cd()
+{
+
+}
+
 void echo_checkbackslash(char *dest, char *argument)
 {
 	if (argument[0] == '\\')
@@ -199,27 +204,39 @@ void viewHistory()
 		}
 	}
 }
-//https://man7.org/linux/man-pages/man3/getcwd.3.html
-//https://www.tutorialspoint.com/unix_system_calls/getcwd.html
-//Conflicting things
+
+//testing left
 void pwd()
 {
-	if(noOfArguements>1)
+	if(strcmp(args[1], "-P")==0)
 	{
-		printf("%s\n","too many arguements" );
+		if(getenv("PWD")==NULL)
+		{
+			printf("%s\n","Specified name cannot be found in the environment of the calling process" );
+		}
+		else{
+			printf("%s\n",getenv("PWD") );		
+		}
 	}
 	else{
-		char tmp[1000];
-		// if(getcwd(tmp, size(tmp))==-1)
-		// {
-		getcwd(tmp, sizeof(tmp));
-		printf("%s\n", tmp);
-		// }
-		// else
-
+		if(strcmp(args[1], "-L") && noOfArguements>1)
+		{
+			printf("%s\n","too many arguements" );
+		}
+		else{
+			char tmp[1000];
+			if(getcwd(tmp, sizeof(tmp))==NULL)
+			{
+				printf("Error no : %d\n",errno );
+			}
+			else{
+				getcwd(tmp, sizeof(tmp));
+				printf("%s\n", tmp);		
+			}
 	}
-
+	}
 }
+
 void callExit()
 {
 	exit(0);
@@ -244,8 +261,11 @@ int main(){
 			noOfArguements++;
 			temp=strtok(NULL, Delimiter);
 		}
-		//cd 
-		if(strcmp(args[0], "echo")==0)
+		if(strcmp(args[0], "cd")==0)
+		{
+			cd();
+		}
+		else if(strcmp(args[0], "echo")==0)
 		{
 			echo();
 		}
