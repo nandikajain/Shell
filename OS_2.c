@@ -16,8 +16,8 @@ int noOfArguements;
 size_t inputSize=1000;
 const char* Delimiter = " \t\r\n\a";
 char** history;
-int total_count;	
-
+int total_count;
+int fd;
 
 void cd()
 {
@@ -70,110 +70,116 @@ void echo_checkbackslash(char *dest, char *argument)
 
 void echo()
 {
-	int st = 1;
-	int isdashN=0;
-	int isdashE=0;
-	if( strcmp(args[st],"-n")==0)
+	if(noOfArguements==1)
 	{
-		isdashN=1;
-		st++;
-	} 
-	if( strcmp(args[st],"-e")==0)
-	{
-		isdashE=1;
-		st++;
-	} 	
-	if( strcmp(args[st],"-n")==0)
-	{
-		isdashN=1;
-		st++;
-	} 	
-	if( strcmp(args[st],"-n")==0)
-	{
-		isdashE=1;
-		st++;
-	} 
-	char dest[250];
-	strcpy(dest, "");
-	if(isdashE==0)
-	{
-		int start=1;
-		if (isdashN==1)
-		{
-			start++;
-
-		}
-		for(int i=start;i<noOfArguements;i++)
-	{
-		if(i==start && args[i][0]=='"')
-		{
-			args[i]=args[i]+1;
-			if(args[i][(strlen(args[i]))-1]=='"')
-			{
-				args[i][(strlen(args[i]))-1] = '\0';
-			}
-			strcat(dest, args[i]);
-			strcat(dest," ");	
-		}
-		else if(i==(noOfArguements-1) && args[i][(strlen(args[i]))-1]=='"')
-		{
-			args[i][(strlen(args[i]))-1] = '\0';
-			strcat(dest, args[i]);
-			strcat(dest," ");
-		}
-		else{
-			strcat(dest, args[i]);
-			strcat(dest," ");
-		}
-	}
-	if(isdashN==1)
-	{
-		printf("%s",dest );
+		printf("\n");
 	}
 	else{
-		printf("%s \n",dest );
-	}
-	}
-	if(isdashE==1)
-	{ int start=2;
 
+		int st = 1;
+		int isdashN=0;
+		int isdashE=0;
+		if( strcmp(args[st],"-n")==0)
+		{
+			isdashN=1;
+			st++;
+		} 
+		if( strcmp(args[st],"-e")==0)
+		{
+			isdashE=1;
+			st++;
+		} 	
+		if( strcmp(args[st],"-n")==0)
+		{
+			isdashN=1;
+			st++;
+		} 	
+		if( strcmp(args[st],"-n")==0)
+		{
+			isdashE=1;
+			st++;
+		} 
+		char dest[250];
+		strcpy(dest, "");
+		if(isdashE==0)
+		{
+			int start=1;
+			if (isdashN==1)
+			{
+				start++;
+
+			}
+			for(int i=start;i<noOfArguements;i++)
+		{
+			if(i==start && args[i][0]=='"')
+			{
+				args[i]=args[i]+1;
+				if(args[i][(strlen(args[i]))-1]=='"')
+				{
+					args[i][(strlen(args[i]))-1] = '\0';
+				}
+				strcat(dest, args[i]);
+				strcat(dest," ");	
+			}
+			else if(i==(noOfArguements-1) && args[i][(strlen(args[i]))-1]=='"')
+			{
+				args[i][(strlen(args[i]))-1] = '\0';
+				strcat(dest, args[i]);
+				strcat(dest," ");
+			}
+			else{
+				strcat(dest, args[i]);
+				strcat(dest," ");
+			}
+		}
 		if(isdashN==1)
 		{
-			start++;
-		}
-		for(int i=start;i<noOfArguements;i++)
-	{
-		if(i==start && args[i][0]=='"')
-		{
-			args[i]=args[i]+1;
-			if(args[i][(strlen(args[i]))-1]=='"')
-			{
-				args[i][(strlen(args[i]))-1] = '\0';
-			}
-			echo_checkbackslash(dest, args[i]);
-			strcat(dest, " ");	
-		}
-		else if(i==(noOfArguements-1) && args[i][(strlen(args[i]))-1]=='"')
-		{
-			args[i][(strlen(args[i]))-1] = '\0';
-			echo_checkbackslash(dest, args[i]);
-			strcat(dest, " ");	
-
+			printf("%s",dest );
 		}
 		else{
-			echo_checkbackslash(dest, args[i]);
-			strcat(dest, " ");	
-
+			printf("%s \n",dest );
 		}
-	}
-	if(isdashN==1)
-	{
-		printf("%s",dest );
-	}
-	else{
-		printf("%s \n",dest );
-	}
-	}
+		}
+		if(isdashE==1)
+		{ int start=2;
+
+			if(isdashN==1)
+			{
+				start++;
+			}
+			for(int i=start;i<noOfArguements;i++)
+		{
+			if(i==start && args[i][0]=='"')
+			{
+				args[i]=args[i]+1;
+				if(args[i][(strlen(args[i]))-1]=='"')
+				{
+					args[i][(strlen(args[i]))-1] = '\0';
+				}
+				echo_checkbackslash(dest, args[i]);
+				strcat(dest, " ");	
+			}
+			else if(i==(noOfArguements-1) && args[i][(strlen(args[i]))-1]=='"')
+			{
+				args[i][(strlen(args[i]))-1] = '\0';
+				echo_checkbackslash(dest, args[i]);
+				strcat(dest, " ");	
+
+			}
+			else{
+				echo_checkbackslash(dest, args[i]);
+				strcat(dest, " ");	
+
+			}
+		}
+		if(isdashN==1)
+		{
+			printf("%s",dest );
+		}
+		else{
+			printf("%s \n",dest );
+		}
+		}}
 }
 void viewHistory()
 {
@@ -205,36 +211,49 @@ void viewHistory()
 	}
 }
 
-//testing left
+//error with pwd, how to fix??
 void pwd()
 {
-	if(strcmp(args[1], "-P")==0)
+	if(noOfArguements==1)
 	{
-		if(getenv("PWD")==NULL)
+		char tmp[1000];
+		if(getcwd(tmp, sizeof(tmp))==NULL)
 		{
-			printf("%s\n","Specified name cannot be found in the environment of the calling process" );
+			printf("Error no : %d\n",errno );
 		}
 		else{
-			printf("%s\n",getenv("PWD") );		
+			getcwd(tmp, sizeof(tmp));
+			printf("%s\n", tmp);		
 		}
 	}
 	else{
-		if(strcmp(args[1], "-L") && noOfArguements>1)
+		if(strcmp(args[1], "-L")==0)
 		{
-			printf("%s\n","too many arguements" );
-		}
-		else{
-			char tmp[1000];
-			if(getcwd(tmp, sizeof(tmp))==NULL)
+			if(getenv("PWD")==NULL)
 			{
-				printf("Error no : %d\n",errno );
+				printf("%s\n","Specified name cannot be found in the environment of the calling process" );
 			}
 			else{
-				getcwd(tmp, sizeof(tmp));
-				printf("%s\n", tmp);		
+				printf("%s\n",getenv("PWD") );		
 			}
-	}
-	}
+		}
+		else{
+			if(strcmp(args[1], "-P") && noOfArguements>1)
+			{
+				printf("%s\n","too many arguements" );
+			}
+			else{
+				char tmp[1000];
+				if(getcwd(tmp, sizeof(tmp))==NULL)
+				{
+					printf("Error no : %d\n",errno );
+				}
+				else{
+					getcwd(tmp, sizeof(tmp));
+					printf("%s\n", tmp);		
+				}
+		}
+		}}
 }
 
 void callExit()
@@ -245,16 +264,21 @@ void callExit()
 int main(){
 
 	args = (char **)malloc(sizeof(char *) * inputSize);
-	history = (char **)malloc(sizeof(char *) * inputSize);
+	// fd=open("history.txt", O_RDWR | O_CREAT );
+	// if(fd==-1)
+	// {
+	// 	printf("Error no %d\n",errno );
+	// 	perror("Error : ");
+	// }
 
 	while(1)
 	{
 		printf(">");
 		getline(&line,&inputSize,stdin);
-		history[total_count]=strdup(line);
-		total_count++;
+		// write(fd,line, strlen(line));
 		char* temp=strtok(line, Delimiter);
 		noOfArguements=0;
+		// printf("%ld\n", strlen(args[0]));
 		while(temp!=NULL)
 		{
 			args[noOfArguements]=temp;
@@ -279,6 +303,11 @@ int main(){
 		}
 		else if(strcmp(args[0], "exit")==0)
 		{
+			// if (close(fd) < 0)  
+   // 			{ 
+   //     			perror("Error : "); 
+ 
+   //  		}  
 			callExit();
 		}
 
