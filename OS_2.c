@@ -199,8 +199,16 @@ void viewHistory()
 		{
 			int temp;
 			idx = 0;
-			while ((temp = read(fd3, &lineTemp2[idx], sizeof(char))) > 0)
+			char checkBackspace;
+			while ((temp = read(fd3, &checkBackspace, sizeof(char))) > 0)
 			{
+				if(checkBackspace!= '\b')
+				{
+					lineTemp2[idx]=checkBackspace;
+				}
+				else{
+					continue;
+				}
 				if (lineTemp2[idx] == '\n')
 				{
 					break;
@@ -211,11 +219,9 @@ void viewHistory()
 			{
 				break;
 			}
-			if (idx > 0)
-			{
-				printf("%d %s", count, lineTemp2);
-				count++;
-			}
+
+			printf("%d %s", count, lineTemp2);
+			count++;
 			int len = strlen(lineTemp2);
 			for (int a = 0; a < len; a++)
 			{
@@ -256,31 +262,17 @@ void viewHistory()
 				{
 					lineTemp2[a] = '\0';
 				}
-				// printf("Here \n" );
 			}
 			idx=0;
-
+    
 		    while ((temp5 = read(fd3, &lineTemp2[idx], sizeof(char))) > 0)
 		    {
-		    	printf("Here 2\n" );
-		    	if(lineTemp2[0]== '\n' || lineTemp2[0]=='\0')
-		    	{
-		  //   						int len = strlen(lineTemp2);
-				// for (int a = 0; a < len; a++)
-				// {
-				// 	lineTemp2[a] = '\0';
-				// }
-		    		continue;
 
-		    	}
-		        if (lineTemp2[idx] == '\n' || lineTemp2[idx] == '\0')
-		        {
-		        	printf("%s\n","Breaking" );
-		            break;
-		        }
-		      	printf("%c\n", lineTemp2[idx]);
+		       // printf("%c\n", x);
 		        lseek(fd3, -1, SEEK_CUR);
-		        write(fd3, "\n", sizeof(char) * strlen("\n"));
+		        write(fd3, "\b", sizeof(char) * strlen("\b"));
+		        if (lineTemp2[idx] == '\n' || lineTemp2[idx] == '\0')
+		            break;
 
 		    }
 
@@ -306,6 +298,8 @@ void viewHistory()
 				char lineTemp2[350];
 				int count = 1;
 				int idx = 0;
+				for (int a = 0; a < 1000; a++)
+					lineTemp2[a] = '\0';
 				while (1)
 				{
 					int temp;
@@ -521,6 +515,45 @@ int main()
 				perror("Error : ");
 			}
 			callExit();
+		}
+		else{
+			pid_t pid= fork();
+			if(pid<0 )
+			{
+				printf("Could not create a child process\n" );
+			}
+			else if(pid==0)
+			{
+				if(strcmp(args[0], "ls") == 0)
+				{
+
+				}
+				else if(strcmp(args[0], "cat") == 0)
+				{
+
+				}
+				else if(strcmp(args[0], "date") == 0)
+				{
+
+				}
+				else if(strcmp(args[0], "rm") == 0)
+				{
+
+				}
+				else if(strcmp(args[0], "mkdir") == 0)
+				{
+
+				}
+				else{
+					printf("Command not found\n");
+				}
+			}
+			else if (pid>0)
+			{
+				waitpid(pid, NULL, WUNTRACED);
+
+			}
+
 		}
 	}
 	return 0;
