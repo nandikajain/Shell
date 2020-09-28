@@ -443,13 +443,17 @@ void callExit()
 
 void cat()
 {
+	if(noOfArguements==1)
+	{
+		printf("No file mentioned to open  \n" );
+	}
 	if(strcmp(args[1], "-n")!=0 && strcmp(args[1], "-E")!=0)
 	{
 
 		int ini=1;
 		while(ini<noOfArguements)
 		{
-			int fd4=open(args[1], O_RDONLY);
+			int fd4=open(args[ini], O_RDONLY);
 			if(fd4==-1)
 			{
 				printf("Error no: %d \n",errno );
@@ -498,7 +502,7 @@ void cat()
 		printf("%d\n",noOfArguements );
 		while(ini<noOfArguements)
 		{
-			int fd5=open(args[2], O_RDONLY);
+			int fd5=open(args[ini], O_RDONLY);
 			if(fd5==-1)
 			{
 				printf("Here\n");
@@ -549,7 +553,7 @@ void cat()
 		printf("%d\n",noOfArguements );
 		while(ini<noOfArguements)
 		{
-			int fd5=open(args[2], O_RDONLY);
+			int fd5=open(args[ini], O_RDONLY);
 			if(fd5==-1)
 			{
 				printf("Here\n");
@@ -594,6 +598,11 @@ void cat()
 
 
 	}
+}
+
+void date()
+{
+
 }
 
 int main()
