@@ -20,6 +20,8 @@ char **history;
 int total_count;
 int fd;
 
+
+//correct history code ahh
 void cd()
 {
 }
@@ -438,6 +440,162 @@ void callExit()
 	exit(0);
 }
 
+
+void cat()
+{
+	if(strcmp(args[1], "-n")!=0 && strcmp(args[1], "-E")!=0)
+	{
+
+		int ini=1;
+		while(ini<noOfArguements)
+		{
+			int fd4=open(args[1], O_RDONLY);
+			if(fd4==-1)
+			{
+				printf("Error no: %d \n",errno );
+				perror("Error: ");
+			}
+			else{
+				char line5[1000];
+				int idx=0;
+				int len = strlen(line5);
+				for(int a = 0; a < len; a++)
+				{	line5[a] = '\0';}
+				while(1){
+					int temp;
+					idx=0;
+					while((temp=read(fd4, &line5[idx], sizeof(char)))>0){
+						if(temp==-1){
+							printf("Error no: %d \n",errno );
+
+						}
+						if(line5[idx]=='\n')
+						{
+							break;
+						}
+						idx++;
+					}
+					if(temp<=0)
+					{
+						break;
+					}
+					printf("%s",line5 );
+					int len = strlen(line5);
+					for(int a = 0; a < len; a++)
+					{	
+						line5[a] = '\0';
+					}
+				}
+			}
+			ini++;			
+		}
+
+
+	}
+	else if (strcmp(args[1], "-n")==0)
+	{
+		int ini=2;
+		printf("%d\n",noOfArguements );
+		while(ini<noOfArguements)
+		{
+			int fd5=open(args[2], O_RDONLY);
+			if(fd5==-1)
+			{
+				printf("Here\n");
+				printf("Error no: %d \n",errno );
+				perror("Error: ");
+			}
+			else{
+				char line5[1000];
+				int idx=0;
+				int len = strlen(line5);
+				for(int a = 0; a < len; a++)
+				{	line5[a] = '\0';}
+				int count=1;
+
+				while(1){
+					int temp;
+					idx=0;
+					while((temp=read(fd5, &line5[idx], sizeof(char)))>0){
+						if(temp==-1){
+							printf("Error no: %d \n",errno );
+
+						}
+						if(line5[idx]=='\n')
+						{
+							break;
+						}
+						idx++;
+					}
+					if(temp<=0)
+					{
+						break;
+					}
+					printf("%d %s",count, line5 );
+					count++;
+					int len = strlen(line5);
+					for(int a = 0; a < len; a++)
+					{	
+						line5[a] = '\0';
+					}
+				}
+			}
+			ini++;			
+		}
+
+	}
+	else{
+		int ini=2;
+		printf("%d\n",noOfArguements );
+		while(ini<noOfArguements)
+		{
+			int fd5=open(args[2], O_RDONLY);
+			if(fd5==-1)
+			{
+				printf("Here\n");
+				printf("Error no: %d \n",errno );
+				perror("Error: ");
+			}
+			else{
+				char line5[1000];
+				int idx=0;
+				int len = strlen(line5);
+				for(int a = 0; a < len; a++)
+				{	line5[a] = '\0';}
+
+				while(1){
+					int temp;
+					idx=0;
+					while((temp=read(fd5, &line5[idx], sizeof(char)))>0){
+						if(temp==-1){
+							printf("Error no: %d \n",errno );
+
+						}
+						if(line5[idx]=='\n')
+						{
+							break;
+						}
+						idx++;
+					}
+					if(temp<=0)
+					{
+						break;
+					}
+					printf("%s $", line5 );
+					int len = strlen(line5);
+					for(int a = 0; a < len; a++)
+					{	
+						line5[a] = '\0';
+					}
+				}
+			}
+			ini++;			
+		}
+
+
+	}
+}
+
 int main()
 {
 
@@ -516,6 +674,10 @@ int main()
 			}
 			callExit();
 		}
+		else if(strcmp(args[0], "cat") == 0)
+		{
+			cat();
+		}
 		else{
 			pid_t pid= fork();
 			if(pid<0 )
@@ -547,14 +709,19 @@ int main()
 				else{
 					printf("Command not found\n");
 				}
+				callExit();
 			}
 			else if (pid>0)
 			{
 				waitpid(pid, NULL, WUNTRACED);
 
 			}
-
 		}
 	}
 	return 0;
 }
+
+
+
+
+	
