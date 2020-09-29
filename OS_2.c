@@ -20,9 +20,54 @@ char **history;
 int total_count;
 int fd;
 struct stat st;
+char *SHELL_PATH;
 
 void cd()
 {
+	int flagL=0;
+	int position=0;
+    for (int a = 0; a < noOfArguements; a++)
+    {
+        if (strcmp(args[a], "-L") == 0)
+         {	flagL = 1;
+         	position=a;
+         }   
+    }
+    if(position==2)
+    	printf("too many arguements\n");
+    else if(flagL==1 && noOfArguements>3)
+    	printf("too many arguements\n" );
+    else if(flagL==0 && noOfArguements>2)
+    	printf("too many arguements\n" );
+    else{
+    	if(noOfArguements==1 || strcmp(args[1], "~")==0 )
+    	{
+    		int status=chdir(SHELL_PATH);
+    		if(status==-1)
+    			printf("failed to change to the shell path\n" );
+    		return;
+
+    	}
+    	char temp10[1000];
+    	getcwd(temp10,1000);
+    	if (strcmp(args[1],"../")==0 || strcmp(args[1],"..")==0)
+    	{
+    		int status=chdir("../");
+    		if(status==-1)
+    			printf("failed to change the relative path\n");
+    	}
+    	else{
+    		char temp11[1000];
+    		strcpy(temp11, temp10);
+    		strcat(temp11,"/");
+    		strcat(temp11, args[flagL+1]);
+    		int status=chdir(temp11);
+    		if(status==-1)
+    			printf("No file or directory\n");
+    	}
+
+    }
+
 }
 
 void echo_checkbackslash(char *dest, char *argument)
@@ -358,6 +403,8 @@ int main()
 		printf("Error no %d\n", errno);
 		perror("Error : ");
 	}
+	char pathS[1000];
+	SHELL_PATH=getcwd(pathS,1000);
 	while (1)
 	{
 		printf(">");
