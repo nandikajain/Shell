@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +21,6 @@ int total_count;
 int fd;
 struct stat st;
 
-//empty args in first command
 void cd()
 {
 }
@@ -73,118 +71,67 @@ void echo_checkbackslash(char *dest, char *argument)
 void echo()
 {
 	if (noOfArguements == 1)
-	{
 		printf("\n");
-	}
 	else
 	{
-
-		int st = 1;
-		int isdashN = 0;
-		int isdashE = 0;
-		if (strcmp(args[st], "-n") == 0)
-		{
-			isdashN = 1;
-			st++;
-		}
-		if (strcmp(args[st], "-e") == 0)
-		{
-			isdashE = 1;
-			st++;
-		}
-		if (strcmp(args[st], "-n") == 0)
-		{
-			isdashN = 1;
-			st++;
-		}
-		if (strcmp(args[st], "-n") == 0)
-		{
-			isdashE = 1;
-			st++;
-		}
+		int isdashN = 0, isdashE = 0,st=1;
+	    for (int a = 0; a < noOfArguements; a++)
+	    {
+	        if (strcmp(args[a], "-e") == 0)
+	           { isdashE = 1; st++;}
+	        if (strcmp(args[a], "-n") == 0)
+	           { isdashN = 1;st++;}
+	    }
 		char dest[250];
 		strcpy(dest, "");
-		if (isdashE == 0)
+		int start = isdashE+isdashN+1;
+		printf("Start is %d\n",start );
+		for (int i = start; i < noOfArguements; i++)
 		{
-			int start = 1;
-			if (isdashN == 1)
+			if (i == start && args[i][0] == '"')
 			{
-				start++;
-			}
-			for (int i = start; i < noOfArguements; i++)
-			{
-				if (i == start && args[i][0] == '"')
-				{
-					args[i] = args[i] + 1;
-					if (args[i][(strlen(args[i])) - 1] == '"')
-					{
-						args[i][(strlen(args[i])) - 1] = '\0';
-					}
-					strcat(dest, args[i]);
-					strcat(dest, " ");
-				}
-				else if (i == (noOfArguements - 1) && args[i][(strlen(args[i])) - 1] == '"')
-				{
+				args[i] = args[i] + 1;
+				if (args[i][(strlen(args[i])) - 1] == '"')
 					args[i][(strlen(args[i])) - 1] = '\0';
-					strcat(dest, args[i]);
-					strcat(dest, " ");
-				}
-				else
+				if(isdashE==1)
 				{
+					echo_checkbackslash(dest, args[i]);
+					strcat(dest," ");
+				}
+				else{
+				strcat(dest, args[i]);
+				strcat(dest, " ");}
+			}
+			else if (i == (noOfArguements - 1) && args[i][(strlen(args[i])) - 1] == '"')
+			{
+				args[i][(strlen(args[i])) - 1] = '\0';
+				if(isdashE==1)
+				{
+					echo_checkbackslash(dest, args[i]);
+					strcat(dest," ");
+				}
+				else{
 					strcat(dest, args[i]);
 					strcat(dest, " ");
-				}
 			}
-			if (isdashN == 1)
-			{
-				printf("%s", dest);
 			}
 			else
 			{
-				printf("%s \n", dest);
+				if(isdashE==1)
+				{
+					echo_checkbackslash(dest, args[i]);
+					strcat(dest, " ");
+				}
+				else{
+					strcat(dest, args[i]);
+					strcat(dest, " ");						
+				}
 			}
 		}
-		if (isdashE == 1)
-		{
-			int start = 2;
-
-			if (isdashN == 1)
-			{
-				start++;
-			}
-			for (int i = start; i < noOfArguements; i++)
-			{
-				if (i == start && args[i][0] == '"')
-				{
-					args[i] = args[i] + 1;
-					if (args[i][(strlen(args[i])) - 1] == '"')
-					{
-						args[i][(strlen(args[i])) - 1] = '\0';
-					}
-					echo_checkbackslash(dest, args[i]);
-					strcat(dest, " ");
-				}
-				else if (i == (noOfArguements - 1) && args[i][(strlen(args[i])) - 1] == '"')
-				{
-					args[i][(strlen(args[i])) - 1] = '\0';
-					echo_checkbackslash(dest, args[i]);
-					strcat(dest, " ");
-				}
-				else
-				{
-					echo_checkbackslash(dest, args[i]);
-					strcat(dest, " ");
-				}
-			}
-			if (isdashN == 1)
-			{
-				printf("%s", dest);
-			}
-			else
-			{
-				printf("%s \n", dest);
-			}
-		}
+		if (isdashN == 1)
+			printf("%s", dest);
+		else
+			printf("%s \n", dest);
 	}
 }
 
@@ -206,32 +153,22 @@ void viewHistory()
 			while ((temp = read(fd3, &checkBackspace, sizeof(char))) > 0)
 			{
 				if(checkBackspace!= '\b')
-				{
 					lineTemp2[idx]=checkBackspace;
-				}
-				else{
+				else
 					continue;
-				}
 				if (lineTemp2[idx] == '\n')
-				{
 					break;
-				}
 				idx++;
 			}
 			if (temp <= 0)
-			{
 				break;
-			}
-
 			printf("%d %s", count, lineTemp2);
 			count++;
 			int len = strlen(lineTemp2);
 			for (int a = 0; a < len; a++)
-			{
-				lineTemp2[a] = '\0';
-			}
+				lineTemp2[a] = '\0';			
 		}
-	}
+		}
 	else if (strcmp(args[1], "-c") == 0)
 	{
 		close(fd);
@@ -241,9 +178,7 @@ void viewHistory()
 	{
 		int offset = atoi(args[2]);
 		if(offset>total_count)
-		{
 			printf("%s\n","history position out of range" );
-		}
 		else{
 			char lineTemp2[1000];
 		    int temp;
@@ -254,48 +189,34 @@ void viewHistory()
 				while ((temp = read(fd3, &lineTemp2[idx], sizeof(char))) > 0)
 				{
 					if (lineTemp2[idx] == '\n')
-					{
 						break;
-					}
 					idx++;
 				}
 				temp5++;
 				int len = strlen(lineTemp2);
 				for (int a = 0; a < len; a++)
-				{
 					lineTemp2[a] = '\0';
-				}
 			}
 			idx=0;
-    
 		    while ((temp5 = read(fd3, &lineTemp2[idx], sizeof(char))) > 0)
 		    {
-
-		       // printf("%c\n", x);
 		        lseek(fd3, -1, SEEK_CUR);
 		        write(fd3, "\b", sizeof(char) * strlen("\b"));
 		        if (lineTemp2[idx] == '\n' || lineTemp2[idx] == '\0')
 		            break;
-
 		    }
-
 		}
-
 	}
 	else
 	{
 		if (noOfArguements > 2)
-		{
 			printf("%s\n", "too many arguements");
-		}
 		else
 		{
 			int value = atoi(args[1]);
 			int temp = 0;
 			if (value < 0)
-			{
 				printf("%s\n", "invalid option");
-			}
 			else if (value > total_count)
 			{
 				char lineTemp2[350];
@@ -311,29 +232,20 @@ void viewHistory()
 					while ((temp = read(fd3, &checkBackspace, sizeof(char))) > 0)
 					{
 						if(checkBackspace!= '\b')
-						{
 							lineTemp2[idx]=checkBackspace;
-						}
-						else{
+						else
 							continue;
-						}
 						if (lineTemp2[idx] == '\n')
-						{
 							break;
-						}
 						idx++;
 					}
 					if (temp <= 0)
-					{
 						break;
-					}
 					printf("%d %s", count, lineTemp2);
 					count++;
 					int len = strlen(lineTemp2);
 					for (int a = 0; a < len; a++)
-					{
 						lineTemp2[a] = '\0';
-					}
 				}
 			}
 			else
@@ -350,26 +262,18 @@ void viewHistory()
 					while ((temp = read(fd3, &checkBackspace, sizeof(char))) > 0)
 					{
 						if(checkBackspace!= '\b')
-						{
 							lineTemp2[idx]=checkBackspace;
-						}
-						else{
+						else
 							continue;
-						}
 						if (lineTemp2[idx] == '\n')
-						{
 							break;
-						}
 						idx++;
 					}
 					initial++;
 					int len = strlen(lineTemp2);
 					for (int a = 0; a < len; a++)
-					{
 						lineTemp2[a] = '\0';
-					}
 				}
-
 				while (1)
 				{
 					int temp;
@@ -378,29 +282,20 @@ void viewHistory()
 					while ((temp = read(fd3, &checkBackspace, sizeof(char))) > 0)
 					{
 						if(checkBackspace!= '\b')
-						{
 							lineTemp2[idx]=checkBackspace;
-						}
-						else{
+						else
 							continue;
-						}
 						if (lineTemp2[idx] == '\n')
-						{
 							break;
-						}
 						idx++;
 					}
 					if (temp <= 0)
-					{
 						break;
-					}
 					printf("%d %s", count, lineTemp2);
 					count++;
 					int len = strlen(lineTemp2);
 					for (int a = 0; a < len; a++)
-					{
 						lineTemp2[a] = '\0';
-					}
 				}
 			}
 		}
@@ -414,9 +309,7 @@ void pwd()
 	{
 		char tmp[1000];
 		if (getcwd(tmp, sizeof(tmp)) == NULL)
-		{
 			printf("Error no : %d\n", errno);
-		}
 		else
 		{
 			getcwd(tmp, sizeof(tmp));
@@ -428,27 +321,19 @@ void pwd()
 		if (strcmp(args[1], "-L") == 0)
 		{
 			if (getenv("PWD") == NULL)
-			{
 				printf("%s\n", "Specified name cannot be found in the environment of the calling process");
-			}
 			else
-			{
 				printf("%s\n", getenv("PWD"));
-			}
 		}
 		else
 		{
 			if (strcmp(args[1], "-P") && noOfArguements > 1)
-			{
 				printf("%s\n", "too many arguements");
-			}
 			else
 			{
 				char tmp2[1000];
 				if (getcwd(tmp2, sizeof(tmp2)) == NULL)
-				{
 					printf("Error no : %d\n", errno);
-				}
 				else
 				{
 					getcwd(tmp2, sizeof(tmp2));
@@ -464,22 +349,8 @@ void callExit()
 	exit(0);
 }
 
-// void date()
-// {//Tue Sep 29 03:17:20 IST 2020
-// 	time_t time = time(NULL);
-// 	struct tm tm = *localtime(&time);
-// 	// printf("%a %02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-// 		printf("%a");
-
-
-// }
-void mkdir()
-{
-
-}
 int main()
 {
-
 	args = (char **)malloc(sizeof(char *) * inputSize);
 	fd = open("./history.txt", O_RDWR | O_CREAT | O_APPEND, S_IRWXO | S_IRWXG | S_IRWXU);
 	if (fd == -1)
@@ -487,7 +358,6 @@ int main()
 		printf("Error no %d\n", errno);
 		perror("Error : ");
 	}
-
 	while (1)
 	{
 		printf(">");
@@ -502,13 +372,9 @@ int main()
 			temp = strtok(NULL, Delimiter);
 		}
 		if (strcmp(args[0], "cd") == 0)
-		{
 			cd();
-		}
 		else if (strcmp(args[0], "echo") == 0)
-		{
 			echo();
-		}
 		else if (strcmp(args[0], "history") == 0)
 		{
 			int fd2 = open("./history.txt", O_RDONLY, 0);
@@ -522,90 +388,61 @@ int main()
 				while ((temp = read(fd2, &lineTemp[idx], sizeof(char))) > 0)
 				{
 					if (lineTemp[idx] == '\n')
-					{
 						break;
-					}
 					idx++;
 				}
 
 				if (temp <= 0)
-				{
 					break;
-				}
 				total_count++;
 				int len = strlen(lineTemp);
 				for (int a = 0; a < len; a++)
-				{
 					lineTemp[a] = '\0';
-				}
 			}
 			close(fd2);
-
 			viewHistory();
 		}
 		else if (strcmp(args[0], "pwd") == 0)
-		{
 			pwd();
-		}
 		else if (strcmp(args[0], "exit") == 0)
 		{
 			if (close(fd) < 0)
-			{
 				perror("Error : ");
-			}
 			callExit();
 		}
-		// else if(strcmp(args[0], "rm")==0)
-		// {
-		// 	rm();
-		// }
 		else{
 			pid_t pid= fork();
 			if(pid<0 )
-			{
 				printf("Could not create a child process\n" );
-			}
+
 			else if(pid==0)
 			{
 				if(strcmp(args[0], "ls") == 0)
 				{
 					// if(execv("./ls", args)==-1)
-					// {
 					// 	printf("Erro no: %d \n",errno );
-					// }
 
 				}
 				else if(strcmp(args[0], "cat") == 0)
 				{
 					if(execv("./cat", args)==-1)
-					{
 						printf("Error no: %d \n", errno);
-					}
 
 				}
 				else if(strcmp(args[0], "date") == 0)
 				{
-					// if(execv("./rm", args)==-1)
-					// {
+					// if(execv("./date", args)==-1)
 					// 	printf("Erro no: %d \n",errno );
-					// }
-
 				}
 				else if(strcmp(args[0], "rm") == 0)
 				{
 					if(execv("./rm", args)==-1)
-					{
 						printf("Erro no: %d \n",errno );
-					}
-
 				}
 				else if(strcmp(args[0], "mkdir") == 0)
 				{	
 					// if(execv("./mkdir", args)==-1)
-					// {
 					// 	printf("Erro no: %d \n",errno );
-					// }
-
 				}
 				else{
 					printf("Command not found\n");
@@ -615,14 +452,8 @@ int main()
 			else if (pid>0)
 			{
 				waitpid(pid, NULL, WUNTRACED);
-
 			}
 		}
 	}
 	return 0;
 }
-
-
-
-
-	

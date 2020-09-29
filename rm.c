@@ -1,33 +1,19 @@
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <math.h>
-#include <time.h>
 extern int errno;
-char *getcwd(char *buf, size_t size);
-char *line;
-char **args;
-int noOfArguements;
-size_t inputSize = 1000;
-const char *Delimiter = " \t\r\n\a";
-char **history;
-int total_count;
 int fd;
 struct stat st;
 
 int main(int noOfArguements, char *args[])
 {	
 	if(noOfArguements==1)
-	{
 		printf("rm: missing operand \n" );
-	}
 	else{
 		int flagV = 0, flagI = 0;
 	    for (int a = 0; a < noOfArguements; a++)
@@ -45,53 +31,37 @@ int main(int noOfArguements, char *args[])
 	            ini++;
 	            continue;
 	        }
-
 	        else if (stat(args[ini], &st) == 0 && S_ISREG(st.st_mode)){
 	        	if(flagI==1)
 	        	{	char str[20];
-	        		// size_t inputs=20;
-
 	        		printf("rm: remove regular file %s? ",args[ini] );
 	        		scanf("%s", str);
-	        		// getline(&str, &inputs,stdin);
 		        	if(strcmp(str,"y")==0 || strcmp(str,"Y")==0)
 		        	{
 		        		if(remove(args[ini])==0)
 		        		{
 		        			if(flagV==1)
-		        			{
 		        				printf("removed %s \n",args[ini] );
-		        			}
 		        		}
-		        		else{
+		        		else
 		        			printf("cannot remove %s \n",args[ini] );
-		        		}
 		        		int len=strlen(str);
 
 		        		for(int abc=0;abc<len;abc++)
-		        		{
-		        			str[abc]='\0';
-		        		}    
-
+		        			str[abc]='\0';   
 					}
 				}
 				if(flagI==0)
 				{
-
 		        	if(remove(args[ini])==0)
 		        	{
 		        		if(flagV==1)
-		        		{
 		        			printf("removed %s \n",args[ini] );
-	        			}
 	        		}
-	        		else{
+	        		else
 	        			printf("cannot remove %s \n",args[ini] );
-	        		}
-
 				}
 				ini++;
-
 			}
 	        else{
 	        	printf("cannot remove %s \n",args[ini] );
@@ -99,6 +69,5 @@ int main(int noOfArguements, char *args[])
 	        	}
 	        }
 	    }
-  
 	return 0;
 } 

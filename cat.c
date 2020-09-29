@@ -8,15 +8,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <math.h>
 extern int errno;
 
 int main(int noOfArguements, char *args[])
 {
     if (noOfArguements == 1)
-    {
         printf("No file mentioned to open ");
-    }
     int flagN = 0, flagE = 0;
     for (int a = 0; a < noOfArguements; a++)
     {
@@ -53,9 +50,7 @@ int main(int noOfArguements, char *args[])
                 while ((temp = read(fd4, &x, sizeof(char))) > 0)
                 {
                     if (temp == -1)
-                    {
                         printf("Error no: %d ", errno);
-                    }
                     if (flagE && x == '\n')
                         printf("$");
                     printf("%c", x);
@@ -68,9 +63,7 @@ int main(int noOfArguements, char *args[])
                     idx++;
                 }
                 if (temp <= 0)
-                {
                     break;
-                }
             }
         }
         ini++;
