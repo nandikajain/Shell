@@ -9,6 +9,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <math.h>
+#include <time.h>
+extern int getdate_err;
 extern int errno;
 
 int main(int noOfArguements, char *args[])

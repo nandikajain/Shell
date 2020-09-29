@@ -15,7 +15,7 @@ int main(int noOfArguements, char *args[])
 {
     if (noOfArguements == 1)
     {
-        printf("No file mentioned to open  \n");
+        printf("No file mentioned to open ");
     }
     int flagN = 0, flagE = 0;
     for (int a = 0; a < noOfArguements; a++)
@@ -39,7 +39,7 @@ int main(int noOfArguements, char *args[])
         int fd4 = open(args[ini], O_RDONLY);
         if (fd4 == -1)
         {
-            printf("Error no: %d \n", errno);
+            printf("Error no: %d ", errno);
             perror("Error: ");
         }
         else
@@ -54,7 +54,7 @@ int main(int noOfArguements, char *args[])
                 {
                     if (temp == -1)
                     {
-                        printf("Error no: %d \n", errno);
+                        printf("Error no: %d ", errno);
                     }
                     if (flagE && x == '\n')
                         printf("$");
@@ -76,4 +76,5 @@ int main(int noOfArguements, char *args[])
         ini++;
     }
     printf("\n");
+    return 0;
 }

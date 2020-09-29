@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <math.h>
+#include <time.h>
 extern int errno;
 char *getcwd(char *buf, size_t size);
 char *line;
@@ -19,6 +20,7 @@ const char *Delimiter = " \t\r\n\a";
 char **history;
 int total_count;
 int fd;
+struct stat st;
 
 //empty args in first command
 void cd()
@@ -462,6 +464,92 @@ void callExit()
 	exit(0);
 }
 
+// void date()
+// {//Tue Sep 29 03:17:20 IST 2020
+// 	time_t time = time(NULL);
+// 	struct tm tm = *localtime(&time);
+// 	// printf("%a %02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+// 		printf("%a");
+
+
+// }
+void rm()
+{
+	if(noOfArguements==1)
+	{
+		printf("rm: missing operand \n" );
+	}
+	else{
+		int flagV = 0, flagI = 0;
+	    for (int a = 0; a < noOfArguements; a++)
+	    {
+	        if (strcmp(args[a], "-i") == 0)
+	            flagI = 1;
+	        if (strcmp(args[a], "-v") == 0)
+	            flagV = 1;
+	    }
+	    int ini=1;
+	    while(ini<noOfArguements)
+	    {
+	    	if (strcmp(args[ini], "-i") == 0 || strcmp(args[ini], "-v") == 0)
+	        {
+	            ini++;
+	            continue;
+	        }
+
+	        else if (stat(args[ini], &st) == 0 && S_ISREG(st.st_mode)){
+	        	if(flagI==1)
+	        	{	char str[20];
+
+	        		printf("rm: remove regular file %s? ",args[ini] );
+	        		scanf("%s", str);
+		        	if(strcmp(str,"y")==0 || strcmp(str,"Y")==0)
+		        	{
+		        		if(remove(args[ini])==0)
+		        		{
+		        			if(flagV==1)
+		        			{
+		        				printf("removed %s \n",args[ini] );
+		        			}
+		        		}
+		        		else{
+		        			printf("cannot remove %s \n",args[ini] );
+		        		}
+		        		int len=strlen(str);
+
+		        		for(int abc=0;abc<len;abc++)
+		        		{
+		        			str[abc]='\0';
+		        		}    
+
+					}
+				}
+				if(flagI==0)
+				{
+
+		        	if(remove(args[ini])==0)
+		        	{
+		        		if(flagV==1)
+		        		{
+		        			printf("removed %s \n",args[ini] );
+	        			}
+	        		}
+	        		else{
+	        			printf("cannot remove %s \n",args[ini] );
+	        		}
+
+				}
+				ini++;
+
+			}
+	        else{
+	        	printf("cannot remove %s \n",args[ini] );
+	        	ini++;
+	        	}
+	        }
+	    }
+	}
+	
 
 int main()
 {
@@ -541,6 +629,10 @@ int main()
 			}
 			callExit();
 		}
+		else if(strcmp(args[0], "rm")==0)
+		{
+			rm();
+		}
 		else{
 			pid_t pid= fork();
 			if(pid<0 )
@@ -555,18 +647,10 @@ int main()
 				}
 				else if(strcmp(args[0], "cat") == 0)
 				{
-					if(noOfArguements == 2)
-						execlp("./cat", args[0], args[1], (char *)NULL);
-					else if (noOfArguements == 3)
-						execlp("./cat", args[0], args[1], args[2], (char *)NULL);
-					else if (noOfArguements == 4)
-						execlp("./cat", args[0], args[1], args[2], args[3], (char *)NULL);
-					else if (noOfArguements == 5)
-						execlp("./cat", args[0], args[1], args[2], args[3], args[4], (char *)NULL);
-					else if (noOfArguements == 6)
-						execlp("./cat", args[0], args[1], args[2], args[3], args[4], args[5], (char *)NULL);
-					else
-						printf("Too many arguments\n");
+					if(execv("./cat", args)==-1)
+					{
+						printf("Error no: %d \n", errno);
+					}
 
 				}
 				else if(strcmp(args[0], "date") == 0)
