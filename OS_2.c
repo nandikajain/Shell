@@ -47,7 +47,7 @@ void cd()
 			strcat(temp10, args[1] + 1);
 			int status = chdir(temp10);
 			if (status == -1)
-				printf("failed to change to the shell path\n");
+				perror("cd: ");
 			return;
 		}
 		int status = chdir(args[flagL + 1]);
