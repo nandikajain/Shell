@@ -23,7 +23,6 @@ int main(int noOfArguements, char *args[])
             flagR = 1;
     }
     int temp=flagU+flagR+1;
-    printf("Temp is : %d, no arg %d\n",temp, noOfArguements );
     if(noOfArguements>temp)
     	printf("too many arguements\n");
     else{
