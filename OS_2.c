@@ -19,6 +19,8 @@ int total_count;
 int fd;
 struct stat st;
 char *SHELL_PATH;
+char *pathCOLOR;
+char *HISTORY_PATH;
 
 void cd()
 {
@@ -171,11 +173,11 @@ void echo()
 
 void viewHistory()
 {
-	int fd3 = open("./history.txt", O_RDWR, 0);
+	int fd3 = open(HISTORY_PATH, O_RDWR, 0);
 	if (noOfArguements >= 2 && strcmp(args[1], "-c") == 0)
 	{
 		close(fd);
-		fd = open("./history.txt", O_RDWR | O_CREAT | O_APPEND | O_TRUNC, S_IRWXO | S_IRWXG | S_IRWXU);
+		fd = open(HISTORY_PATH, O_RDWR | O_CREAT | O_APPEND | O_TRUNC, S_IRWXO | S_IRWXG | S_IRWXU);
 	}
 	else if (noOfArguements >= 2 && strcmp(args[1], "-d") == 0)
 	{
@@ -324,17 +326,21 @@ void callExit()
 int main()
 {
 	args = (char **)malloc(sizeof(char *) * inputSize);
-	fd = open("./history.txt", O_RDWR | O_CREAT | O_APPEND, S_IRWXO | S_IRWXG | S_IRWXU);
+	HISTORY_PATH= (char *)malloc(sizeof(char)*1000);
+	char pathS[1000];
+	SHELL_PATH = getcwd(pathS, 1000);
+	strcpy(HISTORY_PATH,SHELL_PATH);
+	strcat(HISTORY_PATH,"/history.txt");
+	fd = open(HISTORY_PATH, O_RDWR | O_CREAT | O_APPEND, S_IRWXO | S_IRWXG | S_IRWXU);
 	if (fd == -1)
 	{
 		printf("Error no %d\n", errno);
 		perror("Error : ");
 	}
-	char pathS[1000];
-	SHELL_PATH = getcwd(pathS, 1000);
 	while (1)
-	{
-		printf(">");
+	{  	char pathColor[1000];
+		pathCOLOR= getcwd(pathColor, 1000);
+		printf("\033[1;31mShell\033[0;36m%s> \033[0m",pathCOLOR);
 		getline(&line, &inputSize, stdin);
 		write(fd, line, strlen(line));
 		char *temp = strtok(line, Delimiter);
@@ -352,7 +358,7 @@ int main()
 			echo();
 		else if (strcmp(args[0], "history") == 0)
 		{
-			int fd2 = open("./history.txt", O_RDONLY, 0);
+			int fd2 = open(HISTORY_PATH, O_RDONLY, 0);
 			total_count = 0;
 			char lineTemp[300];
 			int idx = 0;
