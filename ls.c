@@ -35,6 +35,7 @@ int main(int noOfArguements, char *args[])
 		dir = opendir(args[a]);
 		if (dir == NULL)
 		{
+			printf("Error no %d\n",errno );
 			perror("ls");
 			return 0;
 		}
@@ -43,7 +44,7 @@ int main(int noOfArguements, char *args[])
 		if (fileHere == NULL)
 			perror("ls");
 		if (flagA + flaga + 2 != noOfArguements)
-			printf("ls %s \n: ", args[a]);
+			printf("%s : \n ", args[a]);
 		while (fileHere != NULL)
 		{
 			char tmp[1024];

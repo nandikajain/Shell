@@ -27,7 +27,7 @@ void implementP(int flagV)
         else
         {
     	    if(flagV==1)
-    		printf("created directory '%s'\n",iniCD );
+    	        printf("created directory '%s'\n",iniCD );
             int status = chdir(token);
             if (status == -1)
                 perror("mkdir ");
