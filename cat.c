@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,7 +36,7 @@ int main(int noOfArguements, char *args[])
         if (fd4 == -1)
         {
             printf("Error no: %d ", errno);
-            perror("Error: ");
+            perror("cat ");
         }
         else
         {
@@ -50,7 +49,10 @@ int main(int noOfArguements, char *args[])
                 while ((temp = read(fd4, &x, sizeof(char))) > 0)
                 {
                     if (temp == -1)
+                    {
                         printf("Error no: %d ", errno);
+                        perror("cat ");
+                    }
                     if (flagE && x == '\n')
                         printf("$");
                     printf("%c", x);

@@ -33,13 +33,13 @@ int main(int noOfArguements, char *args[])
     	if(t==-1)
     	{
     		printf("Error no: %d \n", errno);
-    		perror("Time: ");
+    		perror("date ");
     	}
     	timeT=localtime(&t);
     	if(timeT==NULL)
     	{
     		printf("Error no %d \n",errno );
-    		perror("Local Time:");
+    		perror("date");
     	}
         if(flagU==1)
         {

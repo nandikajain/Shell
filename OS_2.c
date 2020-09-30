@@ -8,7 +8,6 @@
 #include <fcntl.h>
 #include <errno.h>
 extern int errno;
-char *getcwd(char *buf, size_t size);
 char *line;
 char **args;
 int noOfArguements;
@@ -25,38 +24,60 @@ char *HISTORY_PATH;
 void cd()
 {
 	int flagL = 0;
+	int flagE = 0;
 	int position = 0;
 	for (int a = 0; a < noOfArguements; a++)
 	{
 		if (strcmp(args[a], "-L") == 0)
-		{
 			flagL = 1;
-			position = a;
-		}
+		else if (strcmp(args[a], "-e") == 0)
+			flagE = 1;
 	}
-	if (position == 2)
-		printf("too many arguements\n");
-	else if (flagL == 1 && noOfArguements > 3)
-		printf("too many arguements\n");
-	else if (flagL == 0 && noOfArguements > 2)
-		printf("too many arguements\n");
-	else
+	if (flagE + flagL + 2 < noOfArguements)
+		printf("cd: Too many arguments\n");
+	else if (flagE + flagL + 1 == noOfArguements)
 	{
-		if (noOfArguements == 1 || args[1][0] == '~')
+		char tmp[1024];
+		if (flagE && getcwd(tmp, sizeof(tmp)) == NULL)
 		{
-			char temp10[1000];
-			strcpy(temp10, SHELL_PATH);
-			strcat(temp10, args[1] + 1);
-			int status = chdir(temp10);
-			if (status == -1)
-				perror("cd: ");
+			printf("Error no: %d", errno);
+			perror("cd");
 			return;
 		}
-		int status = chdir(args[flagL + 1]);
+		int status = chdir(SHELL_PATH);
 		if (status == -1)
-			printf("No file or directory\n");
+			perror("cd");
+	}
+	else
+	{
+		for (int a = 1; a < noOfArguements; a++)
+		{
+			if (strcmp(args[a], "-L") == 0 || strcmp(args[a], "-e") == 0)
+				continue;
+			if (args[a][0] == '~')
+			{
+				char temp10[1000];
+				strcpy(temp10, SHELL_PATH);
+				strcat(temp10, args[a] + 1);
+				int status = chdir(temp10);
+				if (status == -1)
+					perror("cd ");
+				return;
+			}
+			char tmp[1024];
+			if (flagE && getcwd(tmp, sizeof(tmp)) == NULL)
+			{
+				printf("Error no: %d", errno);
+				perror("cd");
+				return;
+			}
+			int status = chdir(args[a]);
+			if (status == -1)
+				perror("cd");
+		}
 	}
 }
+
 
 void echo_checkbackslash(char *dest, char *argument)
 {
@@ -103,8 +124,13 @@ void echo_checkbackslash(char *dest, char *argument)
 
 void echo()
 {
+	int statusEcho=0;
 	if (noOfArguements == 1)
-		printf("\n");
+	{	
+		statusEcho=printf("\n");
+		if(statusEcho==-1)
+			perror("echo");
+	}	
 	else
 	{
 		int isdashN = 0, isdashE = 0, st = 1;
@@ -165,19 +191,30 @@ void echo()
 			}
 		}
 		if (isdashN == 1)
-			printf("%s", dest);
-		else
-			printf("%s \n", dest);
+		{	statusEcho=printf("%s", dest);
+			if(statusEcho==-1)
+				perror("echo");
+		}	
+		else{
+			statusEcho=printf("%s \n", dest);
+			if(statusEcho==-1)
+				perror("echo");
+		}
 	}
 }
 
 void viewHistory()
 {
 	int fd3 = open(HISTORY_PATH, O_RDWR, 0);
+	if(fd3==-1)
+		perror("history");
 	if (noOfArguements >= 2 && strcmp(args[1], "-c") == 0)
 	{
-		close(fd);
+		if(close(fd)<0)
+			perror("history");
 		fd = open(HISTORY_PATH, O_RDWR | O_CREAT | O_APPEND | O_TRUNC, S_IRWXO | S_IRWXG | S_IRWXU);
+		if(fd==-1)
+			perror("history");
 	}
 	else if (noOfArguements >= 2 && strcmp(args[1], "-d") == 0)
 	{
@@ -195,6 +232,8 @@ void viewHistory()
 				idx = 0;
 				while ((temp = read(fd3, &lineTemp2[idx], sizeof(char))) > 0)
 				{
+					if(temp==-1)
+						perror("history");
 					if (lineTemp2[idx] == '\n')
 						break;
 					idx++;
@@ -208,7 +247,9 @@ void viewHistory()
 			while ((temp5 = read(fd3, &lineTemp2[idx], sizeof(char))) > 0)
 			{
 				lseek(fd3, -1, SEEK_CUR);
-				write(fd3, "\b", sizeof(char) * strlen("\b"));
+				int statustemp=write(fd3, "\b", sizeof(char) * strlen("\b"));
+				if(statustemp==-1)
+					perror("history");
 				if (lineTemp2[idx] == '\n' || lineTemp2[idx] == '\0')
 					break;
 			}
@@ -239,6 +280,8 @@ void viewHistory()
 					char checkBackspace;
 					while ((temp = read(fd3, &checkBackspace, sizeof(char))) > 0)
 					{
+						if(temp==-1)
+							perror("history");
 						if (checkBackspace != '\b')
 							lineTemp2[idx] = checkBackspace;
 						else
@@ -258,6 +301,8 @@ void viewHistory()
 					char checkBackspace;
 					while ((temp = read(fd3, &checkBackspace, sizeof(char))) > 0)
 					{
+						if(temp==-1)
+							perror("history");
 						if (checkBackspace != '\b')
 							lineTemp2[idx] = checkBackspace;
 						else
@@ -274,7 +319,8 @@ void viewHistory()
 			}
 		}
 	}
-	close(fd3);
+	if(close(fd3)<0)
+		perror("history");
 }
 
 void pwd()
@@ -283,36 +329,38 @@ void pwd()
 	{
 		char tmp[1000];
 		if (getcwd(tmp, sizeof(tmp)) == NULL)
-			printf("Error no : %d\n", errno);
-		else
 		{
-			getcwd(tmp, sizeof(tmp));
-			printf("%s\n", tmp);
+			printf("Error no : %d\n", errno);
+			perror("pwd ");
 		}
+		else{
+			printf("%s\n",tmp );
+		}
+		
 	}
 	else
 	{
 		if (strcmp(args[1], "-L") == 0)
 		{
 			if (getenv("PWD") == NULL)
-				printf("%s\n", "Specified name cannot be found in the environment of the calling process");
+				perror("pwd");
 			else
 				printf("%s\n", getenv("PWD"));
 		}
 		else
 		{
-			if (strcmp(args[1], "-P") && noOfArguements > 1)
+			if (strcmp(args[1], "-P")==0 && noOfArguements > 2)
 				printf("%s\n", "too many arguements");
 			else
 			{
 				char tmp2[1000];
 				if (getcwd(tmp2, sizeof(tmp2)) == NULL)
-					printf("Error no : %d\n", errno);
-				else
-				{
-					getcwd(tmp2, sizeof(tmp2));
-					printf("%s\n", tmp2);
+				{	printf("Error no : %d\n", errno);
+					perror("pwd");
 				}
+				else{
+					printf("%s\n", tmp2);
+				}	
 			}
 		}
 	}
@@ -335,14 +383,18 @@ int main()
 	if (fd == -1)
 	{
 		printf("Error no %d\n", errno);
-		perror("Error : ");
+		perror("open ");
 	}
 	while (1)
 	{  	char pathColor[1000];
 		pathCOLOR= getcwd(pathColor, 1000);
 		printf("\033[1;31mShell\033[0;36m%s> \033[0m",pathCOLOR);
 		getline(&line, &inputSize, stdin);
-		write(fd, line, strlen(line));
+		if(strlen(line)==1)
+			continue;
+		int temp102=write(fd, line, strlen(line));
+		if(temp102==-1)
+			perror("write");
 		char *temp = strtok(line, Delimiter);
 		noOfArguements = 0;
 		while (temp != NULL)
@@ -359,6 +411,8 @@ int main()
 		else if (strcmp(args[0], "history") == 0)
 		{
 			int fd2 = open(HISTORY_PATH, O_RDONLY, 0);
+			if(fd2==-1)
+				perror("history");
 			total_count = 0;
 			char lineTemp[300];
 			int idx = 0;
@@ -368,6 +422,8 @@ int main()
 				idx = 0;
 				while ((temp = read(fd2, &lineTemp[idx], sizeof(char))) > 0)
 				{
+					if(temp==-1)
+						perror("history");
 					if (lineTemp[idx] == '\n')
 						break;
 					idx++;
@@ -380,7 +436,8 @@ int main()
 				for (int a = 0; a < len; a++)
 					lineTemp[a] = '\0';
 			}
-			close(fd2);
+			if(close(fd2)==-1)
+				perror("history");
 			viewHistory();
 		}
 		else if (strcmp(args[0], "pwd") == 0)
@@ -388,7 +445,7 @@ int main()
 		else if (strcmp(args[0], "exit") == 0)
 		{
 			if (close(fd) < 0)
-				perror("Error : ");
+				perror("exit ");
 			callExit();
 		}
 		else
@@ -420,7 +477,15 @@ int main()
 				callExit();
 			}
 			else if (pid > 0)
-				waitpid(pid, NULL, WUNTRACED);
+			{
+				pid_t pTEMP=waitpid(pid, NULL, WUNTRACED);
+				if(pTEMP<0)
+				{
+					printf("Error no %d\n", errno);
+					perror("waitpid");
+				}
+			}
+
 		}
 	}
 	return 0;

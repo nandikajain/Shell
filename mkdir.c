@@ -22,14 +22,15 @@ void implementP(int flagV)
     {
         int status = mkdir(token, 0777);
         if (status == -1)
-            perror("mkdir: ");
+           { printf("Error no %d\n", errno);
+            perror("mkdir ");}
         else
         {
     	    if(flagV==1)
     		printf("created directory '%s'\n",iniCD );
             int status = chdir(token);
             if (status == -1)
-                perror("cd: ");
+                perror("mkdir ");
         }
         strcat(iniCD,"/");
         token = strtok(NULL, del);
@@ -66,7 +67,9 @@ int main(int noOfArguements, char *args[])
         {
             int status = mkdir(args[ini], 0777);
             if (status == -1)
-                perror("mkdir: ");
+            {
+                printf("Error no %d\n",errno );
+                perror("mkdir ");}
             if (flagV)
                 printf("created directory '%s'\n", args[ini]);
             ini++;

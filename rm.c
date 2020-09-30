@@ -44,7 +44,10 @@ int main(int noOfArguements, char *args[])
 		        				printf("removed %s \n",args[ini] );
 		        		}
 		        		else
-		        			printf("cannot remove %s \n",args[ini] );
+		        		{
+		        			printf("Error no %d \n",errno);
+		        			perror("rm");
+		        		}
 		        		int len=strlen(str);
 
 		        		for(int abc=0;abc<len;abc++)
@@ -59,7 +62,10 @@ int main(int noOfArguements, char *args[])
 		        			printf("removed %s \n",args[ini] );
 	        		}
 	        		else
-	        			printf("cannot remove %s \n",args[ini] );
+	        		{
+	        			printf("Error no %d \n",errno);
+	        			perror("rm");
+	        		}
 				}
 				ini++;
 			}
