@@ -126,11 +126,11 @@ void echo()
 {
 	int statusEcho=0;
 	if (noOfArguements == 1)
-	{	
+	{
 		statusEcho=printf("\n");
 		if(statusEcho==-1)
 			perror("echo");
-	}	
+	}
 	else
 	{
 		int isdashN = 0, isdashE = 0, st = 1;
@@ -194,7 +194,7 @@ void echo()
 		{	statusEcho=printf("%s", dest);
 			if(statusEcho==-1)
 				perror("echo");
-		}	
+		}
 		else{
 			statusEcho=printf("%s \n", dest);
 			if(statusEcho==-1)
@@ -336,7 +336,7 @@ void pwd()
 		else{
 			printf("%s\n",tmp );
 		}
-		
+
 	}
 	else
 	{
@@ -360,7 +360,7 @@ void pwd()
 				}
 				else{
 					printf("%s\n", tmp2);
-				}	
+				}
 			}
 		}
 	}
@@ -388,7 +388,7 @@ int main()
 	while (1)
 	{  	char pathColor[1000];
 		pathCOLOR= getcwd(pathColor, 1000);
-		printf("\033[1;31mShell\033[0;36m%s> \033[0m",pathCOLOR);
+		printf("\033[1;32mShell\033[1;34m%s> \033[0m",pathCOLOR);
 		getline(&line, &inputSize, stdin);
 		if(strlen(line)==1)
 			continue;
