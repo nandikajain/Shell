@@ -2,69 +2,69 @@
 ### Execute
 Make command: ```make``` 
 
-### Commands Implemented:
+### Commands Implemented:-
 
-#### <u>cd</u>
+### <u>cd</u>
 
 cd is used to change the current working directory to a specified folder.
 
 **Flags Implemented :-**
 
-- <u>-P</u>
+- <u>-P</u> <br>
   This flag uses physical directory structure without following symbolic links.
-- <u>-e</u>
+- <u>-e</u>  <br>
   When this flag is used, if the -P option is supplied, and the current working directory cannot be determined successfully, exit with a non-zero status.
 
 **Usage :-**
 
 To use relative or absolute paths, the command is used as it is with the flags required as ```cd [-P [-e]] path``` . You can also go directly to the shell home using the command as ```cd [-P [-e]]```. The path can also be relative to shell home using the ~ prefix.
 
-#### <u>echo</u>
+### <u>echo</u>
 
 Displays a line of text on the terminal.
 
 **Flags Implemented :-**
 
-- <u>-n</u>
+- <u>-n</u>  <br>
   This flag doesn’t append a new line.
-- <u>-e</u>
+- <u>-e</u>  <br>
   This flag enables interpretation of backslash escapes. 
 
 **Usage :-**
 
 The command can be called as ```echo [-e] [-n] text ```.
 
-#### <u>history</u>
+### <u>history</u>
 
 Maintains a history of all the commands used across all the sessions of the shell.
 
 **Flags Implemented :-**
 
-- <u>-c</u>
+- <u>-c</u>  <br>
   This flag clears the history list by deleting all of the entries.
-- <u>-d</u>
+- <u>-d</u>  <br>
   This flag deletes the history entry at position *OFFSET*. Negative offsets count back from the end of the history list. 
 
 **Usage :-**
 
 To view the entire history, use command ```history```. To view the last OFFSET commands, use ```history OFFSET```. To delete the command at OFFSET, use ```history -d OFFSET```. To clear the entire history, use ```history -c```.
 
-#### <u>pwd</u>
+### <u>pwd</u>
 
 This command gives the present working directory of the shell.
 
 **Flags Implemented :-**
 
-- <u>-L</u>
+- <u>-L</u>  <br>
   This flag uses PWD from the environment, even if it contains symlinks.
-- <u>-P</u>
+- <u>-P</u>  <br>
   This flag avoids all symlinks.
 
 **Usage :-**
 
 To use this command, simply run it as ```pwd [-P] [-L]```.
 
-#### <u>exit</u>
+### <u>exit</u>
 
 This command exits the user from the shell.
 
@@ -72,75 +72,75 @@ This command exits the user from the shell.
 
 Use as ```exit```.
 
-#### <u>date</u>
+### <u>date</u>
 
 Using this command, the user can print the system date and time.
 
 **Flags Implemented :-**
 
-- <u>-u</u>
+- <u>-u</u>  <br>
   Prints the coordinated universal time (UTC).
-- <u>-R</u>
+- <u>-R</u>  <br>
   Outputs date and time in RFC 5322 format.
 
 **Usage :-**
 
 The command can be called as ```date [-u] [-R]```.
 
-#### <u>cat</u>
+### <u>cat</u>
 
 This command concatenates file and prints on the standard output.
 
 **Flags Implemented :-**
 
-- <u>-E</u>
+- <u>-E</u>  <br>
   This flag displays $ at end of each line.
-- <u>-n</u>
+- <u>-n</u>  <br>
   This flag numbers all output lines.
 
 **Usage :-**
 
 The command can be called as ```cat [-E] [-n] file1 file2 … ``` to concatenate files in those order.
 
-#### <u>ls</u>
+### <u>ls</u>
 
 This command is used to list directory contents.
 
 **Flags Implemented :-**
 
-- <u>-a</u>
+- <u>-a</u>  <br>
   Using this flag, the command does not ignore entries starting with .
-- <u>-A</u>
+- <u>-A</u>  <br>
   Using this flag, the command does not list implied . and ..
 
 **Usage :-**
 
 The command can be called as ```ls [-a] [-A] path1 path2 ...``` to list the contents of files or directory in that order.
 
-#### <u>rm</u>
+### <u>rm</u>
 
 This command can be used to remove files or directories.
 
 **Flags Implemented :-**
 
-- <u>-i</u>
+- <u>-i</u>  <br>
   This flag prompts before every removal.
-- <u>-v</u>
+- <u>-v</u>  <br>
   This flag explains what is being done.
 
 **Usage :-**
 
 The command can be called as ```rm [-i] [-v] file1 file2 ...```.
 
-#### <u>mkdir</u>
+### <u>mkdir</u>
 
 Using this command, we can make directories.
 
 **Flags Implemented :-**
 
-- <u>-p</u>
+- <u>-p</u>  <br>
   This flag creates all the directories recursively.
-- <u>-v</u>
+- <u>-v</u>  <br>
   This flag prints a message for each created directory
 
 **Usage :-**
